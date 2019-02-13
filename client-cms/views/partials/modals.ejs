@@ -1,0 +1,58 @@
+<!--  =================================== -->
+<!--               DELETE                  -->
+<!--  =================================== -->
+<div class="modal fade" id="myModalDel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title" style="color:red">Warning!</h4>
+      </div>
+      <div class="modal-body">
+        Yaking mau delete : <p id="mauDel"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-warning" id="confirmDel">Delete</button>
+      </div>
+    </div><!-- /.modal-content -->
+
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<!--  =================================== -->
+<!--               UPDATE                  -->
+<!--  =================================== -->
+
+<div class="modal fade" id="myModalEdit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title">Warning!</h4>
+      </div>
+      <div class="modal-body">
+
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="editLetter" class="text-left">Letter</label>
+            <input type="text" class="form-control" id="editLetter" required>
+          </div>
+          <div class="form-group">
+            <label for="editFrequency">Frequency</label>
+            <input type="text" class="form-control" id="editFrequency"  required>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" id="confirmEdit">Update</button>
+      </div>
+    </div><!-- /.modal-content -->
+
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

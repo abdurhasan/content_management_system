@@ -1,0 +1,46 @@
+<% include partials/header.ejs%>
+
+<div class="container">
+    <div id="piechart" style="width: 900px; height: 500px;"></div>
+
+</div>
+
+<script>
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawBasic);
+
+    function drawBasic() {
+        $.ajax({
+            url: `http://localhost:8888/api/data`,
+            method: 'GET'
+        }).done(snap => {
+            let dataX = [
+                ['Data', 'Letters per frequency']
+            ];
+
+            snap.dataList.map(item => {
+                dataX.push([item.letter, item.frequency])
+            })
+            
+            var data = google.visualization.arrayToDataTable(dataX);
+
+            var options = {
+                title: 'My Data'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+            chart.draw(data, options);
+        })
+    }
+
+
+
+
+</script>
+
+
+
+</body>
+
+</html>

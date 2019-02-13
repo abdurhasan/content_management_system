@@ -1,0 +1,59 @@
+<% include partials/header.ejs%>
+
+<body>
+
+    <div class="container">
+        <div id="chart_div"></div>
+
+
+    </div>
+
+    <script type="text/javascript">
+        let apiUrl = `http://localhost:8888/api/datadate`;
+        $(document).ready(function () {
+            google.charts.load('current', { packages: ['corechart', 'line'] });
+            google.charts.setOnLoadCallback(drawBasic);
+
+            function drawBasic() {
+                $.ajax({
+                    url: apiUrl,
+                    method: 'GET'
+                }).done(data => {
+                    console.log(data)
+                    let listdata = [];
+                    listdata.push(['Year', 'Data']);
+                    let itemchart;
+                    let d;
+                    data.dataList.forEach(item => {
+                        itemchart = [];
+                        d = new Date(item.letter)
+                        itemchart.push(`${d.getFullYear()}`);
+                        itemchart.push(item.frequency);
+                        listdata.push(itemchart);
+                    })
+                    console.log(JSON.stringify(listdata));
+                    var data = google.visualization.arrayToDataTable(listdata);
+
+
+                    var options = {
+                        hAxis: {
+                            title: 'Year'
+                        },
+                        vAxis: {
+                            title: 'Frequency'
+                        }
+                    };
+
+                    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+                    chart.draw(data, options);
+
+                })
+            }
+        })
+    </script>
+
+
+</body>
+
+</html>

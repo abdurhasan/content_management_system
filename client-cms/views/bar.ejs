@@ -1,0 +1,52 @@
+<% include partials/header.ejs%>
+<body>
+<div class="container">
+  <div id="chart_div"></div>
+</div>
+
+<script>
+  google.charts.load('current', { packages: ['corechart', 'bar'] });
+  google.charts.setOnLoadCallback(drawBasic);
+
+  function drawBasic() {
+    $.ajax({
+      url: `http://localhost:8888/api/data`,
+      method: 'GET'
+    }).done(snap => {
+      let dataX = [
+        ['sebelahkirih popup', 'index Data'],
+      ];
+
+      snap.dataList.map(item => {
+        dataX.push([item.letter,item.frequency])
+      })
+            
+      var data = google.visualization.arrayToDataTable(dataX);
+
+      var options = {
+        title: 'Data letters',
+
+        width: 793,
+        height: 700,
+        hAxis: {
+          title: 'Frequency letter',
+          minValue: 0
+        },
+        vAxis: {
+          title: 'Letter',
+        }
+      };
+
+      var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+
+    })
+  }
+
+</script>
+
+
+</body>
+
+</html>

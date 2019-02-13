@@ -1,0 +1,30 @@
+<% include partials/header.ejs%>
+<body>
+  
+    <% include partials/navbar.ejs%>
+
+<div class="container">
+  <div class="jumbotron">
+  </div>
+</div>
+<script src="/javascripts/auth.js"></script>
+<script type="text/javascript">
+
+  $(document).ready(function () {
+    auth();
+    displayUser(localStorage.getItem('username'));
+  })
+
+  function displayUser(username) {
+    let html = `<h2>Wellcome,</h2> <h2>${username}</h2>`;
+    $('.jumbotron').html(html);
+  }
+
+  
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,272 @@
+<% include partials/header.ejs%>
+
+<body>
+
+
+    <% include partials/navbar.ejs%>
+    <div class="container">
+        <div id="input-alert" class="alert alert-success" role="alert"></div>
+        <div class="panel panel-primary">
+            <div class="panel-heading text-center">
+                <b class="panel-title">MAPS DATA</b>
+            </div>
+            <div class="panel-body">
+                <button id="add-btn" class="btn btn-primary">Add</span></button>
+
+                <div id="add-form" class="panel panel-default">
+                    <div class="panel-body">
+                        <form class="form-inline">
+                            <h3></h3>
+                            <div class="form-group">
+                                <label for="addtitle" class="text-left">Title</label>
+                                <input type="text" class="form-control" id="addtitle"  required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addlat">Latitude</label>
+                                <input type="text" class="form-control" id="addlat"  required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addlng">Longitude</label>
+                                <input type="text" class="form-control" id="addlng"  required>
+                            </div>
+                            <button type="submit" class="btn btn-success">Save</button>
+                        </form>
+                    </div>
+                </div>
+
+                <form id="search-form" class="form-inline">
+                    <h3>Search</h3>
+                    <div class="form-group">
+                        <label for="searchtitle" class="text-left">Title</label>
+                        <input type="text" class="form-control" id="searchtitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="searchlat">Latitude</label>
+                        <input type="text" class="form-control" id="searchlat" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="searchlng">Longitude</label>
+                        <input type="text" class="form-control" id="searchlng"  required>
+                    </div>
+                </form>
+
+                <br>
+                <h3>List of Data</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <th>No</th>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
+                        <th>Action</th>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <script src="/javascripts/auth.js"></script>
+    <script type="text/javascript">
+    
+        let apiUrl = `http://localhost:8888/api/maps/`;
+        let apiUrlu = `http://localhost:8888/api/users/`;
+        let id = "";
+        var token =localStorage.getItem('token')
+        $(document).ready(function () {
+            auth();
+            $('#add-form').hide();
+            $('#input-alert').hide();
+            loadData();
+        })
+
+        // GET DATA
+        function drawTable(data) {
+            let html = "";
+            let no = 1;
+            // alert(data)
+            data.forEach(item => {
+                html += `<tr>`;
+                html += `<td>${no}</td>`;
+                html += `<td>${item.id}</td>`;
+                html += `<td>${item.title}</td>`;
+                html += `<td>${item.lat}</td>`;
+                html += `<td>${item.lng}</td>`;
+                html += `<td>`
+                html += `<button class="editBtn btn btn-primary" dataid="${item.id}" datatitle="${item.title}" datalat="${item.lat}" datalng="${item.lng}">edit</button>`;
+                html += `<button class="deleteBtn btn btn-danger" dataid="${item.id}">delete</button>`;
+                html += `</td>`
+                html += `</tr>`;
+                no++;
+            })
+            $('table tbody').html(html);
+        }
+
+        function loadData() {
+            $.ajax({
+                url: apiUrl,
+                method: 'GET'
+            }).done(data => {          
+                
+                drawTable(data.mapsList);
+            })
+        }
+
+        // BROWSE DATA
+        function browseData() {
+            $('#add-form').hide();
+            let title = $('#searchtitle').val();
+            let lat = $('#searchlat').val();
+            let lng = $('#searchlng').val();
+            if (isNaN(lat) === true && lat != "" || isNaN(lng) === true && lng != "") {
+                displayAlert("Please insert number")
+            } else {
+                $.ajax({
+                    url: apiUrl + 'search',
+                    method: 'POST',
+                    data: {
+                        title: title,
+                        lat: lat,
+                        lng: lng
+                    }
+                }).done(data => {
+                    $('#input-alert').hide();
+                    drawTable(data);
+                })
+            }
+        }
+
+        $('#searchtitle').keyup(function () {
+            $('#searchtitle').val($('#searchtitle').val().toUpperCase());
+            browseData();
+        });
+
+        $('#searchlat').keyup(function () {
+            browseData();
+        });
+
+        $('#searchlng').keyup(function () {
+            browseData();
+        });
+
+        // ADD DATA
+        $("#add-btn").click(function () {
+            if ($('#add-form').is(":hidden")) {
+                $('#addtitle').val('');
+                $('#addlat').val('');
+                $('#addlng').val('');
+                $('#add-form').hide();
+                id = "";
+                showAddForm("Add Data");
+            } else {
+                $('#add-form').hide();
+            }
+        })
+
+        $('#addtitle').keyup(function () {
+            $('#addtitle').val($('#addtitle').val().toUpperCase());
+        });
+
+        $('#add-form form').submit(function (e) {
+            e.preventDefault();
+            saveData();
+        })
+
+
+        // DELETE DATA
+        $("table tbody").on("click", ".deleteBtn", function () {
+            let cfrm = confirm("Are you sure will delete this data?");
+            let url =apiUrl + $(this).attr('dataid')
+            
+            if (cfrm) {
+                
+                $.ajax({
+                    url: url,
+                    method: "DELETE",
+                    data:{
+                        token: token
+                    }
+                }).done(data => {
+                    console.log(data)
+                    loadData();
+                })
+            }
+        })
+
+        // EDIT DATA
+        $("table tbody").on("click", ".editBtn", function () {
+            $('#addtitle').val($(this).attr('datatitle'));
+            $('#addlat').val($(this).attr('datalat'));
+            $('#addlng').val($(this).attr('datalng'));
+            id = $(this).attr('dataid');
+            showAddForm("Edit Data");
+        })
+
+        // HELPERS
+        function saveData() {
+            let title = $('#addtitle').val();
+            let lat = $('#addlat').val();
+            let lng = $('#addlng').val();
+            if (isNaN(lat) === true || isNaN(lng) === true) {
+                displayAlert("Please insert number")
+            } else {
+                if (id == "") {
+                    // ADD DATA
+                    $.ajax({
+                        url: apiUrl,
+                        method: 'POST',
+                        data: {
+                            title: title,
+                            lat: lat,
+                            lng: lng,     
+                            token:token                       
+                        }
+                    }).done(data => {
+                        displayAlert("Data telah ditambahkan");
+                        $('#add-form').hide();
+                        loadData();
+                    })
+                } else {
+                    // EDIT DATA
+                    $.ajax({
+                        url: apiUrl + id,
+                        method: 'PUT',
+                        data: {
+                            title: title,
+                            lat: lat,
+                            lng: lng,
+                            token:token
+                        }
+                    }).done(data => {
+                        displayAlert("Data has been edited");
+                        $('#add-form').hide();
+                        loadData();
+                        id = "";
+                    })
+                }
+            }
+        }
+
+        function displayAlert(data) {
+            $('#input-alert').show();
+            $('#input-alert').html(data);
+        }
+
+        function showAddForm(data) {
+            $('#add-form').show();
+            $('#add-form h3').html(data);
+        }
+
+        $('#logout').click(function (e) {
+            e.preventDefault();
+            localStorage.clear();
+            window.location = '/login';
+        })
+
+    </script>
+</body>
+
+</html>
